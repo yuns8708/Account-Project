@@ -1,5 +1,6 @@
 package com.example.account.controller;
 
+import com.example.account.dto.CancelBalance;
 import com.example.account.dto.TransactionDto;
 import com.example.account.dto.UseBalance;
 import com.example.account.service.TransactionService;
@@ -56,9 +57,35 @@ class TransactionControllerTest {
         ).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accountNumber").value("1000000000"))
-                .andExpect(jsonPath("$.transactionResult").value("S"))
-                .andExpect(jsonPath("$.userId").value("transactionId"))
+                .andExpect(jsonPath("$.transactionResultType").value("S"))
+                .andExpect(jsonPath("$.transactionId").value("transactionId"))
                 .andExpect(jsonPath("$.amount").value("10000"));
+    }
+
+    @Test
+    void successCancelBalance() throws Exception {
+        // given
+        given(transactionService.cancelBalance(anyString(), anyString(), anyLong()))
+                .willReturn(TransactionDto.builder()
+                        .accountNumber("1000000000")
+                        .transactedAt(LocalDateTime.now())
+                        .amount(10000L)
+                        .transactionId("transactionId")
+                        .transactionResultType(TransactionResultType.S)
+                        .build());
+        // when
+        // then
+        mockMvc.perform(post("/transaction/cancel")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new CancelBalance.Request("transactionIdCancel", "2000000000", 3000L)
+                        ))
+                ).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.accountNumber").value("1000000000"))
+                .andExpect(jsonPath("$.transactionResultType").value("S"))
+                .andExpect(jsonPath("$.transactionId").value("transactionId"))
+                .andExpect(jsonPath("$.amount").value(10000));
     }
 
 }
