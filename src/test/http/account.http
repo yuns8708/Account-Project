@@ -12,7 +12,7 @@ Content-Type: application/json
 
 {
   "userId": 1,
-  "initialBalance": 0
+  "initialBalance": 100000
 }
 
 ### delete acco  unt
